@@ -1,9 +1,18 @@
+# =============================================================================
+# FRAUD DETECTION API - DOCKER COMPOSE
+# =============================================================================
+# This file orchestrates the containerized services of the application.
+# It builds and runs the FastAPI service and exposes it on port 80.
+# Run with: docker compose up
+# =============================================================================
 version: "3"
 
 services:
+    # FastAPI application service
     web:
+    # Build the image using the Dockerfile in the current directory
         build: .
-
+         # Map port 80 of the host machine to port 80 of the container
         ports:
         - 80:80
 

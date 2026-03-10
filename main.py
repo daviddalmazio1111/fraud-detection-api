@@ -1,9 +1,26 @@
+# =============================================================================
+# FRAUD DETECTION API
+# =============================================================================
+# This module exposes a REST API built with FastAPI that serves predictions
+# from a pre-trained Random Forest model. Given a credit card transaction,
+# it returns whether the transaction is fraudulent or not.
+# =============================================================================
+
 from fastapi import FastAPI
 from pydantic import BaseModel
 import pandas as pd
 import joblib
+
+# =============================================================================
+# 1. APP INITIALIZATION & MODEL LOADING
+# =============================================================================
 app=FastAPI()
 model=joblib.load("RandomForest_model.sav")
+# =============================================================================
+# 2. INPUT DATA MODEL
+# =============================================================================
+# Defines the expected structure of a transaction request.
+# Features V1-V28 are anonymized PCA components from the original dataset.
 class Credit_features(BaseModel):
     Time: float
     V1:float
@@ -36,10 +53,18 @@ class Credit_features(BaseModel):
     V28:float
     Amount:float
 
-
+# =============================================================================
+# 3. PREDICTION ENDPOINT
+# =============================================================================
 
 @app.post("/Credit_features")
 def Post_tasks(Transaction_data:Credit_features):
+    """
+    Takes a credit card transaction as input and returns a fraud prediction.
+
+    - **0** : Legitimate transaction
+    - **1** : Fraudulent transaction
+    """
     dictionnary= vars(Transaction_data)
     df=pd.DataFrame([dictionnary])
     Is_Fraud=model.predict(df)

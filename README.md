@@ -15,11 +15,26 @@ A machine learning application that detects fraudulent credit card transactions 
 
 The model is trained on the [Credit Card Fraud Detection dataset](https://www.kaggle.com/datasets/mlg-ulb/creditcardfraud) from Kaggle. Since the original features are confidential, the dataset uses 28 anonymized PCA components (V1-V28) along with the transaction Time and Amount.
 
-The dataset is highly imbalanced (only 0.17% fraud cases), so we applied **undersampling** to balance the classes before training a **Random Forest Classifier**.
+### Class Imbalance
+The dataset is highly imbalanced — only 0.17% of transactions are fraudulent (492 fraud cases vs 284,315 legitimate ones). To handle this, we applied **undersampling** by keeping all 492 fraud cases and randomly sampling 492 legitimate transactions, resulting in a balanced 50/50 dataset.
 
-**Model performance:**
-- Accuracy: 94%
-- Recall: 91%
+> Note: Outlier removal on the `Amount` column was tested but decreased model performance, as fraudulent transactions often have atypical amounts. This approach was therefore discarded.
+
+### Model Selection & Training
+We trained a **Random Forest Classifier** with hyperparameter tuning via **RandomizedSearchCV** to find the optimal combination of:
+- Number of estimators
+- Maximum tree depth
+- Minimum samples per split and leaf
+- Bootstrap strategy
+### Model Validation
+We used **5-Fold Cross-Validation** to evaluate model robustness before final training. Recall was chosen as the primary metric since missing a fraud (false negative) is far more costly than a false alarm.
+
+**Cross-validation results (Recall):**
+- Mean Recall: ~89.85%
+
+**Final model performance:**
+- Accuracy: 92.9%
+- Recall: 89.9%
 
 ---
 
@@ -119,7 +134,5 @@ Response:
 
 ## 🔮 Future Improvements
 
-- Implement SMOTE oversampling instead of undersampling
 - Add more models and compare performance (XGBoost, LightGBM)
 - Add feature importance visualization in the Streamlit interface
-- Add user authentication to the API
